@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
-
 
 const commands = {
   kim: `Available commands:
@@ -11,7 +10,7 @@ const commands = {
 - themes
 - clear
 
-✨ Easter Eggs:
+Easter Egg commands:
 - anime
 - pomsky
 - pigeons
@@ -19,8 +18,7 @@ const commands = {
 
   help: `Type "kim" to see available commands.`,
 
- about: `Hey! I’m Kim — a software engineering student at WGU and a full-time mom powered by caffeine and creativity. When I’m not coding or studying, I’m wrangling Pomskies, bingeing anime, or designing Pokémon keychains at Pokue.Designs. I love building things that feel good to use — just like this terminal! 🧠💻✨`,
- 
+  about: `Hey! I’m Kim — a software engineering student at WGU and a full-time mom powered by caffeine and creativity. When I’m not coding or studying, I’m wrangling Pomskies, bingeing anime, or designing Pokémon keychains at Pokue.Designs. I love building things that feel good to use — just like this terminal!`,
 
   experience: `Software Engineering Student – WGU
 Courses: Front-End Web Dev, Git, Python, Data Management
@@ -45,7 +43,7 @@ GitHub: https://github.com/kimkue`,
 - night-owl
 - terminal-classic
 - pastel
-Use: theme [name] to change.`,
+Type the theme you'd like below:`,
 
   clear: 'clear',
 
@@ -56,12 +54,12 @@ Use: theme [name] to change.`,
 - Sailor Moon
 - Attack on Titan`,
 
-  pomsky: `🐾 Meet Mochi & Miso!
+  pomsky: `Meet Mochi & Miso!
 - Mochi: Orange Pomsky
 - Miso: Tricolor Pomsky (Black, Brown, White)
 Always nearby during coding sprints!`,
 
-  pigeons: `🐦 Fun Fact: I love pigeons! I even included one in my portfolio art.`,
+  pigeons: `Fun Fact: I love pigeons! I even included one in my portfolio art.`,
 
   tcg: `Top Pokémon TCG Cards:
 - Charizard (Base Set)
@@ -74,29 +72,50 @@ Always nearby during coding sprints!`,
 function App() {
   const [history, setHistory] = useState([]);
   const [input, setInput] = useState('');
-  React.useEffect(() => {
+  const [theme, setTheme] = useState('terminal-classic');
+
+  useEffect(() => {
     setHistory([
       '👋 Welcome to my portfolio!',
       'To display the available commands, type 👉 "kim" and press Enter.',
       'To validate each command, just hit Enter. Use Tab for autocompletion.'
     ]);
   }, []);
-  
+
   const handleCommand = (e) => {
     if (e.key === 'Enter') {
-      const trimmed = input.trim();
-      const output = commands[trimmed] || `Command not found: ${trimmed}`;
-      if (output === 'clear') {
-        setHistory([]);
-      } else {
-        setHistory([...history, `kimkue@portfolio:~$ ${trimmed}`, output]);
+      const trimmed = input.trim().toLowerCase();
+
+      // Theme switching logic
+      const themeList = ['cyberpunk', 'sakura', 'night-owl', 'terminal-classic', 'pastel'];
+      if (themeList.includes(trimmed)) {
+        setTheme(trimmed);
+        setHistory((prev) => [
+          ...prev,
+          `kimkue@portfolio:~$ ${trimmed}`,
+          `Theme set to ${trimmed}.`
+        ]);
+        setInput('');
+        return;
       }
+
+      switch (trimmed) {
+        case 'clear':
+          setHistory([]);
+          break;
+
+        default:
+          const output = commands[trimmed] || `Command not found: ${trimmed}`;
+          setHistory((prev) => [...prev, `kimkue@portfolio:~$ ${trimmed}`, output]);
+          break;
+      }
+
       setInput('');
     }
   };
 
   return (
-    <div className="terminal-window">
+    <div className={`terminal-window ${theme}`}>
       <div className="terminal-header">
         <div className="traffic-lights">
           <div className="dot red"></div>
